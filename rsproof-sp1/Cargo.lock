@@ -1694,22 +1694,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fibonacci-script"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
- "calculate_winner",
- "clap",
- "dotenv",
- "hex",
- "serde",
- "serde_json",
- "sp1-build",
- "sp1-sdk",
- "tracing",
-]
-
-[[package]]
 name = "fixed-hash"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2465,6 +2449,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
 dependencies = [
  "hashbrown 0.15.0",
+]
+
+[[package]]
+name = "main-script"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+ "calculate_winner",
+ "clap",
+ "dotenv",
+ "hex",
+ "serde",
+ "serde_json",
+ "sp1-build",
+ "sp1-sdk",
+ "tracing",
 ]
 
 [[package]]

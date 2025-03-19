@@ -44,10 +44,10 @@ fn main() {
 
     let args = Args::parse();
 
-    if args.execute == args.prove {
-        eprintln!("Error: You must specify either --execute or --prove");
-        std::process::exit(1);
-    }
+    // if args.execute == args.prove {
+    //     eprintln!("Error: You must specify either --execute or --prove");
+    //     std::process::exit(1);
+    // }
 
     let client = ProverClient::from_env();
 
@@ -57,36 +57,36 @@ fn main() {
     let mut stdin = SP1Stdin::new();
     stdin.write(&game_result);
 
-    if args.execute {
-        let (output, report) = client.execute(ROCK_PAPER_SCISSORS_PROGRAM_ELF, &stdin).run().unwrap();
-        println!("Program executed successfully.");
+    // if true{
+    let (output, report) = client.execute(ROCK_PAPER_SCISSORS_PROGRAM_ELF, &stdin).run().unwrap();
+    println!("Program executed successfully.");
 
-        let decoded = PublicValuesStruct::abi_decode(output.as_slice(), true).unwrap();
-        let PublicValuesStruct { gameResult, winCount } = decoded;
-        println!("Game Result: {:#?}", gameResult);
-
-        // Use the enum to determine and print the outcome
-        let outcome = GameOutcome::from_win_count(winCount);
-        match outcome {
-            GameOutcome::UserWon => println!("User has won!"),
-            GameOutcome::ComputerWon => println!("Computer has won!"),
-            GameOutcome::Tie => println!("It's a tie!"),
-        }
-
-        let expected_winner = calculate_winner::compute_winner(gameResult);
-        assert_eq!(winCount, expected_winner);
-        println!("Values are correct!");
-
-        println!("Number of cycles: {}", report.total_instruction_count());
-    } else {
-        let (pk, vk) = client.setup(ROCK_PAPER_SCISSORS_PROGRAM_ELF);
-        let proof = client
-            .prove(&pk, &stdin)
-            .run()
-            .expect("failed to generate proof");
-
-        println!("Successfully generated proof!");
-        client.verify(&proof, &vk).expect("failed to verify proof");
-        println!("Successfully verified proof!");
+    let decoded = PublicValuesStruct::abi_decode(output.as_slice(), true).unwrap();
+    let PublicValuesStruct { gameResult, winCount } = decoded;
+    println!("Game Result: {:#?}", gameResult);
+    println!("Win Count: {:#?}", winCount);
+    // Use the enum to determine and print the outcome
+    let outcome = GameOutcome::from_win_count(winCount);
+    match outcome {
+        GameOutcome::UserWon => println!("User has won!"),
+        GameOutcome::ComputerWon => println!("Computer has won!"),
+        GameOutcome::Tie => println!("It's a tie!"),
     }
+
+    let expected_winner = calculate_winner::compute_winner(gameResult);
+    assert_eq!(winCount, expected_winner);
+    println!("Values are correct!");
+
+    println!("Number of cycles: {}", report.total_instruction_count());
+    // } else {
+    //     let (pk, vk) = client.setup(ROCK_PAPER_SCISSORS_PROGRAM_ELF);
+    //     let proof = client
+    //         .prove(&pk, &stdin)
+    //         .run()
+    //         .expect("failed to generate proof");
+
+    //     println!("Successfully generated proof!");
+    //     client.verify(&proof, &vk).expect("failed to verify proof");
+    //     println!("Successfully verified proof!");
+    // }
 }
