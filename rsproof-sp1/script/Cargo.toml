@@ -24,7 +24,7 @@ clap = { version = "4.0", features = ["derive", "env"] }
 tracing = "0.1.40"
 hex = "0.4.3"
 alloy-sol-types = { workspace = true }
-fibonacci-lib = { path = "../lib" }
+calculate_winner= { path = "../lib" }
 dotenv = "0.15.0"
 
 [build-dependencies]

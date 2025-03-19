@@ -1022,6 +1022,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "calculate_winner"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+]
+
+[[package]]
 name = "camino"
 version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1687,29 +1694,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "fibonacci-lib"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
-]
-
-[[package]]
-name = "fibonacci-program"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
- "fibonacci-lib",
- "sp1-zkvm",
-]
-
-[[package]]
 name = "fibonacci-script"
 version = "0.1.0"
 dependencies = [
  "alloy-sol-types 0.7.7",
+ "calculate_winner",
  "clap",
  "dotenv",
- "fibonacci-lib",
  "hex",
  "serde",
  "serde_json",
@@ -3675,6 +3666,15 @@ checksum = "bb919243f34364b6bd2fc10ef797edbfa75f33c252e7998527479c6d6b47e1ec"
 dependencies = [
  "bytes",
  "rustc-hex",
+]
+
+[[package]]
+name = "rock-paper-scissors-program"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+ "calculate_winner",
+ "sp1-zkvm",
 ]
 
 [[package]]

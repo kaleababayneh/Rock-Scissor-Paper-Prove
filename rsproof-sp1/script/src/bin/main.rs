@@ -1,24 +1,30 @@
-//! An end-to-end example of using the SP1 SDK to generate a proof of a program that can be executed
-//! or have a core proof generated.
-//!
-//! You can run this script using the following command:
-//! ```shell
-//! RUST_LOG=info cargo run --release -- --execute
-//! ```
-//! or
-//! ```shell
-//! RUST_LOG=info cargo run --release -- --prove
-//! ```
-
 use alloy_sol_types::SolType;
 use clap::Parser;
-use fibonacci_lib::PublicValuesStruct;
+use calculate_winner::PublicValuesStruct;
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 
-/// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
-pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
+pub const ROCK_PAPER_SCISSORS_PROGRAM_ELF: &[u8] = include_elf!("rock-paper-scissors-program");
 
-/// The arguments for the command.
+// New enum to represent the game outcome
+#[derive(Debug)]
+enum GameOutcome {
+    UserWon,
+    ComputerWon,
+    Tie,
+}
+
+impl GameOutcome {
+    // Convert winCount to GameOutcome
+    fn from_win_count(count: u32) -> Self {
+        match count {
+            0 => GameOutcome::UserWon,
+            1 => GameOutcome::ComputerWon,
+            2 => GameOutcome::Tie,
+            _ => panic!("Invalid win count: {}", count),
+        }
+    }
+}
+
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -27,17 +33,15 @@ struct Args {
 
     #[clap(long)]
     prove: bool,
-
-    #[clap(long, default_value = "20")]
-    n: u32,
+    
+    #[clap(long, default_value = "[[0,1]]")]
+    game_result: String,
 }
 
 fn main() {
-    // Setup the logger.
     sp1_sdk::utils::setup_logger();
     dotenv::dotenv().ok();
 
-    // Parse the command line arguments.
     let args = Args::parse();
 
     if args.execute == args.prove {
@@ -45,47 +49,43 @@ fn main() {
         std::process::exit(1);
     }
 
-    // Setup the prover client.
     let client = ProverClient::from_env();
 
-    // Setup the inputs.
-    let mut stdin = SP1Stdin::new();
-    stdin.write(&args.n);
+    let game_result: Vec<[u32; 2]> = serde_json::from_str(&args.game_result)
+        .expect("Failed to parse game_result as JSON array of [u32; 2]");
 
-    println!("n: {}", args.n);
+    let mut stdin = SP1Stdin::new();
+    stdin.write(&game_result);
 
     if args.execute {
-        // Execute the program
-        let (output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
+        let (output, report) = client.execute(ROCK_PAPER_SCISSORS_PROGRAM_ELF, &stdin).run().unwrap();
         println!("Program executed successfully.");
 
-        // Read the output.
         let decoded = PublicValuesStruct::abi_decode(output.as_slice(), true).unwrap();
-        let PublicValuesStruct { n, a, b } = decoded;
-        println!("n: {}", n);
-        println!("a: {}", a);
-        println!("b: {}", b);
+        let PublicValuesStruct { gameResult, winCount } = decoded;
+        println!("Game Result: {:#?}", gameResult);
 
-        let (expected_a, expected_b) = fibonacci_lib::fibonacci(n);
-        assert_eq!(a, expected_a);
-        assert_eq!(b, expected_b);
+        // Use the enum to determine and print the outcome
+        let outcome = GameOutcome::from_win_count(winCount);
+        match outcome {
+            GameOutcome::UserWon => println!("User has won!"),
+            GameOutcome::ComputerWon => println!("Computer has won!"),
+            GameOutcome::Tie => println!("It's a tie!"),
+        }
+
+        let expected_winner = calculate_winner::compute_winner(gameResult);
+        assert_eq!(winCount, expected_winner);
         println!("Values are correct!");
 
-        // Record the number of cycles executed.
         println!("Number of cycles: {}", report.total_instruction_count());
     } else {
-        // Setup the program for proving.
-        let (pk, vk) = client.setup(FIBONACCI_ELF);
-
-        // Generate the proof
+        let (pk, vk) = client.setup(ROCK_PAPER_SCISSORS_PROGRAM_ELF);
         let proof = client
             .prove(&pk, &stdin)
             .run()
             .expect("failed to generate proof");
 
         println!("Successfully generated proof!");
-
-        // Verify the proof.
         client.verify(&proof, &vk).expect("failed to verify proof");
         println!("Successfully verified proof!");
     }
