@@ -48,7 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         return res.json({
           success: true,
-          gameResult,  // You could include this in the response if needed
         })
     });
 

@@ -1,12 +1,12 @@
 use alloy_sol_types::sol;
 
 sol! {
-    /// The public values encoded as a struct that can be easily deserialized inside.
     struct PublicValuesStruct {
         uint32[2][] gameResult;
         uint32 winCount;
     }
 }
+
 
 // it is a rock paper scissors game 0 = rock, 1 = paper, 2 = scissors
 pub fn compute_winner(game_result: Vec<[u32; 2]>) -> u32 {
