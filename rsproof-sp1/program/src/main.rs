@@ -1,6 +1,3 @@
-//! A simple program that takes a number `n` as input, and writes the `n-1`th and `n`th fibonacci
-//! number as an output.
-
 // These two lines are necessary for the program to properly compile.
 //
 // Under the hood, we wrap your main function with some extra code so that it behaves properly
@@ -18,7 +15,6 @@ pub fn main() {
     // from the prover.
     let game_result = sp1_zkvm::io::read::<Vec<[u32; 2]>>();
     
-    // Compute the n'th win count using a function from the workspace lib crate.
     let win_count = compute_winner(game_result.clone());
 
     // Encode the public values of the program.
