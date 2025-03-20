@@ -79,18 +79,19 @@ fn main() {
 
     // println!("Number of cycles: {}", report.total_instruction_count());
     // } else {
-        let (pk, vk) = client.setup(ROCK_PAPER_SCISSORS_PROGRAM_ELF);
-        let proof = client
-            .prove(&pk, &stdin)
-            .run()
-            .expect("failed to generate proof");
+    // PROVE MODE
+    let (pk, vk) = client.setup(ROCK_PAPER_SCISSORS_PROGRAM_ELF);
+    let proof = client
+        .prove(&pk, &stdin)
+        .run()
+        .expect("failed to generate proof");
 
-        let proof_path = "proof.bin";
-        proof.save(proof_path).expect("failed to save proof");
-        println!("Proof saved to file: {}", proof_path);
+    let proof_path = "proof.bin";
+    proof.save(proof_path).expect("failed to save proof");
+    println!("Proof saved to file: {}", proof_path);
 
-        println!("Successfully generated proof!");
-        client.verify(&proof, &vk).expect("failed to verify proof");
-        println!("Successfully verified proof!");
+    println!("Successfully generated proof!");
+    client.verify(&proof, &vk).expect("failed to verify proof");
+    println!("Successfully verified proof!");
     // }
 }
