@@ -1,1 +1,1 @@
-On chain proof generation for the rock scissors paper game
+On chain proof generation for the rock scissors paper game using sp1 zkvm
